@@ -2,3 +2,4 @@
 
 from . import models
 from . import mrp_workorder
+from . import project

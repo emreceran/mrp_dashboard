@@ -1,0 +1,6 @@
+/* Yönetim ekranındaki Proje kartlarının genişliğini ayarlama */
+/* Normalde bu değer 300px-350px civarındadır. 450px yaparak yan yana 3 tane sığmasını garantiliyoruz. */
+.o_project_kanban .o_kanban_record {
+    flex-basis: 450px !important;
+    min-width: 450px !important;
+}

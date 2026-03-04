@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_management_dashboard_projects" model="ir.actions.act_window">
+        <field name="name">Proje Özeti</field>
+        <field name="res_model">project.project</field>
+        <field name="view_mode">kanban,list,form</field>
+
+        <field name="domain">[('last_update_status', '=', 'on_track')]</field>
+
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Sistemde durumu "İzleme Açık" (Yeşil) olan hiçbir proje bulunamadı!
+            </p>
+        </field>
+    </record>
+
+
+    <menuitem id="menu_management_root"
+              name="Yönetim"
+              sequence="0"
+              web_icon="project,static/description/icon.png"/>
+
+    <menuitem id="menu_management_projects"
+              name="Projeler"
+              parent="menu_management_root"
+              action="action_management_dashboard_projects"
+              sequence="10"/>
+
+    <record id="view_project_kanban_inherit_management" model="ir.ui.view">
+        <field name="name">project.project.kanban.inherit.management</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.view_project_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//footer" position="before">
+                <field name="production_summary_html" invisible="1"/>
+                <field name="production_percent" invisible="1"/>
+
+                <div class="w-100 px-2 pb-2" onclick="event.stopPropagation();">
+
+                    <details style="margin-bottom: 5px; border: 1px solid #dee2e6; border-radius: 4px; overflow: hidden; background-color: #fff;">
+                        <summary style="cursor: pointer; padding: 5px 8px; background-color: #f8f9fa; font-size: 11px; font-weight: bold; list-style: none; display: flex; justify-content: space-between; align-items: center; margin: 0;">
+                            <span style="color: #2c3e50;"><i class="fa fa-cogs me-1"></i> Üretim</span>
+                            <span t-attf-class="badge rounded-pill text-bg-#{record.production_percent.raw_value == 100 ? 'success' : 'primary'}">
+                                % <t t-esc="record.production_percent.raw_value"/>
+                            </span>
+                        </summary>
+                        <div style="padding: 5px; border-top: 1px solid #dee2e6;">
+                            <a type="object" name="action_open_project_mos" style="text-decoration: none; color: inherit; display: block; cursor: pointer;" title="Üretim Emirlerini Aç">
+                                <t t-out="record.production_summary_html.raw_value"/>
+                            </a>
+                        </div>
+                    </details>
+
+                    <details style="margin-bottom: 5px; border: 1px solid #dee2e6; border-radius: 4px; overflow: hidden; background-color: #fff;">
+                        <summary style="cursor: pointer; padding: 5px 8px; background-color: #f8f9fa; font-size: 11px; font-weight: bold; list-style: none; display: flex; justify-content: space-between; align-items: center; margin: 0;">
+                            <span style="color: #d35400;"><i class="fa fa-truck me-1"></i> Sevkiyat</span>
+                            <span class="badge rounded-pill text-bg-secondary">% 0</span>
+                        </summary>
+                        <div style="padding: 8px; border-top: 1px solid #dee2e6; font-size: 10px; color: #6c757d; text-align: center;">
+                            Sevkiyat hesaplamaları yakında eklenecek...
+                        </div>
+                    </details>
+
+                    <details style="border: 1px solid #dee2e6; border-radius: 4px; overflow: hidden; background-color: #fff;">
+                        <summary style="cursor: pointer; padding: 5px 8px; background-color: #f8f9fa; font-size: 11px; font-weight: bold; list-style: none; display: flex; justify-content: space-between; align-items: center; margin: 0;">
+                            <span style="color: #16a085;"><i class="fa fa-wrench me-1"></i> Montaj</span>
+                            <span class="badge rounded-pill text-bg-secondary">% 0</span>
+                        </summary>
+                        <div style="padding: 8px; border-top: 1px solid #dee2e6; font-size: 10px; color: #6c757d; text-align: center;">
+                            Montaj hesaplamaları yakında eklenecek...
+                        </div>
+                    </details>
+
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
