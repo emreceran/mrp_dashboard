@@ -27,6 +27,116 @@
               action="action_management_dashboard_projects"
               sequence="10"/>
 
+    <!-- Eski menü kaydını temizle (orphan action referansı) -->
+    <delete id="menu_management_operations" model="ir.ui.menu"/>
+
+    <!-- Operasyonlar: Alt menüleri olan parent menü -->
+    <menuitem id="parent_menu_operations"
+              name="Operasyonlar"
+              parent="menu_management_root"
+              sequence="20"/>
+
+    <!-- ============================================ -->
+    <!--       Üretim Emirleri - Search View          -->
+    <!-- ============================================ -->
+    <record id="search_mrp_production_management" model="ir.ui.view">
+        <field name="name">mrp.production.search.management</field>
+        <field name="model">mrp.production</field>
+        <field name="arch" type="xml">
+            <search string="Üretim Emirleri Ara">
+                <!-- Arama Alanları -->
+                <field name="name" string="Üretim Emri"/>
+                <field name="product_id" string="Ürün"/>
+                <field name="kalip_id" string="Kalıp"/>
+                <field name="project_id" string="Proje"/>
+
+                <!-- Tarih Filtreleri -->
+                <separator/>
+                <filter string="Bugün" name="filter_today"
+                        domain="[('date_start', '&gt;=', (context_today()).strftime('%Y-%m-%d 00:00:00')),
+                                 ('date_start', '&lt;', (context_today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d 00:00:00'))]"/>
+                <filter string="Yarın" name="filter_tomorrow"
+                        domain="[('date_start', '&gt;=', (context_today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d 00:00:00')),
+                                 ('date_start', '&lt;', (context_today() + datetime.timedelta(days=2)).strftime('%Y-%m-%d 00:00:00'))]"/>
+                <filter string="Dün" name="filter_yesterday"
+                        domain="[('date_start', '&gt;=', (context_today() - datetime.timedelta(days=1)).strftime('%Y-%m-%d 00:00:00')),
+                                 ('date_start', '&lt;', (context_today()).strftime('%Y-%m-%d 00:00:00'))]"/>
+
+
+                <filter string="Geçmiş Üretimler" name="filter_past"
+                        domain="[('date_start', '&lt;', (context_today()).strftime('%Y-%m-%d 00:00:00'))]"/>
+                <filter string="Gelecek Üretimler" name="filter_future"
+                        domain="[('date_start', '&gt;=', (context_today() + datetime.timedelta(days=1)).strftime('%Y-%m-%d 00:00:00'))]"/>
+
+                <!-- Durum Filtreleri -->
+                <separator/>
+                <filter string="Planlanmış" name="filter_planned"
+                        domain="[('is_planned', '=', True)]"/>
+                <filter string="Devam Eden" name="filter_in_progress"
+                        domain="[('state', '=', 'progress')]"/>
+                <filter string="Tamamlanan" name="filter_done"
+                        domain="[('state', '=', 'done')]"/>
+
+                <!-- Gruplama -->
+                <group expand="0" string="Grupla">
+                    <filter string="Kalıp" name="group_kalip" context="{'group_by': 'kalip_id'}"/>
+                    <filter string="Ürün" name="group_product" context="{'group_by': 'product_id'}"/>
+                    <filter string="Proje" name="group_project" context="{'group_by': 'project_id'}"/>
+                    <filter string="Durum" name="group_state" context="{'group_by': 'state'}"/>
+                    <filter string="Başlangıç Tarihi" name="group_date_start" context="{'group_by': 'date_start:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ============================================ -->
+    <!--       Üretim Emirleri - Action               -->
+    <!-- ============================================ -->
+    <record id="action_management_production_orders" model="ir.actions.act_window">
+        <field name="name">Üretim Emirleri</field>
+        <field name="res_model">mrp.production</field>
+        <field name="view_mode">kanban,list,form,calendar</field>
+        <field name="search_view_id" ref="search_mrp_production_management"/>
+        <field name="domain">[('is_planned', '=', True)]</field>
+        <field name="context">{
+            'search_default_filter_today': 1,
+            'search_default_group_kalip': 1,
+        }</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Bugün için planlanmış üretim emri bulunamadı.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_management_production_orders"
+              name="Üretim Emirleri"
+              parent="parent_menu_operations"
+              action="action_management_production_orders"
+              sequence="10"/>
+
+    <!-- ============================================ -->
+    <!--       İş Emirleri - Action                   -->
+    <!-- ============================================ -->
+    <record id="action_management_work_orders" model="ir.actions.act_window">
+        <field name="name">İş Emirleri</field>
+        <field name="res_model">mrp.workorder</field>
+        <field name="view_mode">list,form,kanban,calendar,timeline</field>
+        <!-- Standart mpr.workorder search view'ını kullanabiliriz, özel gerekirse ekleriz -->
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Henüz iş emri bulunamadı.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_management_work_orders"
+              name="İş Emirleri"
+              parent="parent_menu_operations"
+              action="action_management_work_orders"
+              sequence="20"/>
+
     <record id="view_project_kanban_inherit_management" model="ir.ui.view">
         <field name="name">project.project.kanban.inherit.management</field>
         <field name="model">project.project</field>
