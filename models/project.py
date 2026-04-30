@@ -35,11 +35,11 @@ class Project(models.Model):
 
     def _compute_production_summary(self):
         # Sütunlarda görmek istediğimiz sabit ürün listesi
-        FIXED_PRODUCTS = [
-            'Aşık Kirişi', 'Bağlantı Kirişi', 'Döşeme', 'Kolon',
-            'Kreyn Kirişi', 'L - T Kirişi', 'Makas', 'Oluk',
-            'Sundurma Kirişi', 'T Kirişi'
-        ]
+        # Şarteli (show_on_mrp_dashboard) açık olan ürünleri bul
+        active_products = self.env['product.template'].search([('show_on_mrp_dashboard', '=', True)])
+
+        # Sadece isimlerini çekerek eski FIXED_PRODUCTS yapısı gibi bir string listesi oluştur
+        FIXED_PRODUCTS = active_products.mapped('name')
 
         for project in self:
             stats = {prod: {'bekleyen': 0, 'islemde': 0, 'biten': 0, 'total': 0} for prod in FIXED_PRODUCTS}

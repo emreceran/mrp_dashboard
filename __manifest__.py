@@ -10,6 +10,8 @@
     'data': [
         'views/mrp_production_views.xml',
         'views/management_views.xml',
+        'views/product_views.xml',
+
     ],
 
     # CSS dosyamızı backend arayüzüne ekliyoruz:
